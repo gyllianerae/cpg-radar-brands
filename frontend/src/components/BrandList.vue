@@ -23,6 +23,7 @@
 
 <script>
 import axios from 'axios';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default {
   name: 'BrandList',
@@ -34,7 +35,7 @@ export default {
   methods: {
     async fetchBrands() {
       try {
-        const response = await axios.get('http://localhost:3000/brands');
+        const response = await axios.get(`${backendUrl}/brands`);
         this.brands = response.data;
       } catch (error) {
         console.error('Error fetching brands:', error);

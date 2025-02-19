@@ -142,6 +142,7 @@ export default {
     const selectedBrand = ref(null);
     const isAuthenticated = ref(false);
     const brandToDelete = ref(null);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const checkAuthentication = () => {
       isAuthenticated.value = sessionStorage.getItem('accessGranted') === 'true';
@@ -155,7 +156,7 @@ export default {
 
     const fetchBrands = async () => {
       try {
-        const response = await fetch('http://localhost:3000/brands');
+        const response = await fetch(`${backendUrl}/brands`);
         const data = await response.json();
         brands.value = data;
       } catch (error) {
@@ -193,7 +194,7 @@ export default {
 
     const handleDeleteConfirm = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/brands/${brandToDelete.value._id}`, {
+        const response = await fetch(`${backendUrl}/brands/${brandToDelete.value._id}`, {
           method: 'DELETE',
         });
         

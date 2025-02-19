@@ -85,6 +85,7 @@ export default {
   props: ['isVisible', 'closeDialog', 'editData'],
   emits: ['brand-added'],
   setup(props, { emit }) {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const brand = ref({
       brand: '',
       formula: {
@@ -121,7 +122,7 @@ export default {
     };
 
     const submitBrand = async () => {
-      const url = props.editData ? `http://localhost:3000/brands/${props.editData._id}` : 'http://localhost:3000/brands';
+      const url = props.editData ? `${backendUrl}/brands/${props.editData._id}` : `${backendUrl}/brands`;
       const method = props.editData ? 'PUT' : 'POST';
 
       // Convert to the format expected by the API

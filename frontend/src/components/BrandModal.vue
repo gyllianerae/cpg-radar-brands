@@ -193,6 +193,7 @@ import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import ConfirmationModal from './ConfirmationModal.vue';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const categories = [
   "Immune Health",
   "Energy",
@@ -318,8 +319,8 @@ export default {
 
     const submitBrand = async () => {
       const url = props.editData 
-        ? `http://localhost:3000/brands/${props.editData._id}` 
-        : 'http://localhost:3000/brands';
+        ? `${backendUrl}/brands/${props.editData._id}` 
+        : `${backendUrl}/brands`;
       const method = props.editData ? 'PUT' : 'POST';
 
       try {

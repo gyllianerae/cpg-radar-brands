@@ -35,6 +35,7 @@
 
 <script>
 import axios from 'axios';
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default {
   props: ['brandId'],
@@ -46,7 +47,7 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get(`http://localhost:3000/brands/${this.brandId}`);
+      const response = await axios.get(`${backendUrl}/brands/${this.brandId}`);
       const brand = response.data;
       this.brandName = brand.brand;
       this.formulas = brand.formulas.map((formula) => ({
@@ -68,7 +69,7 @@ export default {
       };
 
       try {
-        await axios.put(`http://localhost:3000/brands/${this.brandId}`, updatedBrand);
+        await axios.put(`${backendUrl}/brands/${this.brandId}`, updatedBrand);
         alert('Brand updated successfully!');
         this.$router.push('/');
       } catch (error) {

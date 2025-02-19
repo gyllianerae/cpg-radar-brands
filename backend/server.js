@@ -2,17 +2,33 @@ import dotenv from 'dotenv';
 import Fastify from 'fastify';
 import mongoose from 'mongoose';
 import cors from '@fastify/cors';
-// import { brandRoutes } from './routes/brandRoutes.js';
+import path from 'path';
+import fastifyStatic from '@fastify/static';
+import { fileURLToPath } from 'url';;
 
 import Brand from './models/brand.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = Fastify({ logger: true });
 
 await app.register(cors, {
     origin: '*'
 });
+
+// Serve static files from the frontend dist folder
+app.register(fastifyStatic, {
+    root: path.join(__dirname, '..', 'frontend', 'dist'),
+    prefix: '/',
+  });
+
+// Fallback for SPA (serve index.html for unmatched routes)
+app.setNotFoundHandler((req, reply) => {
+    reply.sendFile('index.html');
+  });
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = 'mongodb://localhost:27017/brands';

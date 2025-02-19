@@ -161,6 +161,7 @@ export default {
         brands.value = data;
       } catch (error) {
         toast.error("Failed to fetch brands");
+        console.log(error);
       }
     };
 

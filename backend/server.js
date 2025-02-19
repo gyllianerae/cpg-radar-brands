@@ -30,9 +30,6 @@ app.setNotFoundHandler((req, reply) => {
     reply.sendFile('index.html');
   });
 
-const PORT = process.env.PORT || 3000;
-const MONGO_URI = 'mongodb://localhost:27017/brands';
-
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error(err));

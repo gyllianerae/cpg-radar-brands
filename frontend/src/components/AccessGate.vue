@@ -52,7 +52,7 @@
       const error = ref('');
   
       const handleSubmit = () => {
-        if (accessCode.value === 'cp101xza2') {
+        if (accessCode.value.toLowerCase() === 'cp101xza2') {
           // Store in sessionStorage
           sessionStorage.setItem('accessGranted', 'true');
           emit('access-granted');

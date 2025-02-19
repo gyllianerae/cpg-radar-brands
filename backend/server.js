@@ -96,7 +96,7 @@ app.delete('/brands/:id', async (request, reply) => {
 
 //start the server
 try {
-    await app.listen({ port: 3000 })
+    await app.listen({ port: 3000, host: '0.0.0.0'})
     console.log(`Server running at ${app.server.address().port}`);
 } catch (err) {
     app.log.error(err)

@@ -88,13 +88,92 @@
               <select
                 v-model="brand.formulas[brand.formulas.length - index - 1].category"
                 required
+                @change="handleCategoryChange(brand.formulas.length - index - 1)"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
                 <option value="" disabled>Select a category</option>
+                <option value="Other">Other</option>
                 <option v-for="category in categories" :key="category" :value="category">
                   {{ category }}
                 </option>
               </select>
+            </div>
+
+            <!-- Tags Input with Autocomplete -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+              <div class="space-y-3">
+                <div class="relative">
+                  <p 
+                      v-if="showCategoryWarning[brand.formulas.length - index - 1]" 
+                      class="text-red-600 text-sm mt-1"
+                    >
+                      Please select a category first
+                    </p>
+                  <div 
+                    class="relative" 
+                    :ref="el => { if (el) tagsContainers[brand.formulas.length - index - 1] = el }"
+                  >
+                  <input 
+                      v-model="formulaTags[brand.formulas.length - index - 1]"
+                      @input="handleTagInput(brand.formulas.length - index - 1)"
+                      @keydown.enter.prevent="selectFirstTagSuggestion(brand.formulas.length - index - 1)"
+                      @keydown.tab.prevent="handleTagTabComplete(brand.formulas.length - index - 1)"
+                      @keydown.up.prevent="handleTagArrowKeys('up', brand.formulas.length - index - 1)"
+                      @keydown.down.prevent="handleTagArrowKeys('down', brand.formulas.length - index - 1)"
+                      type="text"
+                      placeholder="Type a tag and press Enter"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      :class="{'pr-20': tagSuggestions.length > 0}"
+                      autocomplete="off"
+                      @focus="checkCategorySelected(brand.formulas.length - index - 1)"
+                    />
+                    <div 
+                      v-if="tagSuggestions.length > 0 && activeTagFormulaIndex === (brand.formulas.length - index - 1)"
+                      class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto"
+                      @click.stop
+                    >
+                      <div 
+                        v-for="(suggestion, idx) in tagSuggestions" 
+                        :key="suggestion"
+                        @click="selectTagSuggestion(suggestion, brand.formulas.length - index - 1)"
+                        @mouseenter="selectedTagSuggestionIndex = idx"
+                        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        :class="{'bg-gray-100': selectedTagSuggestionIndex === idx}"
+                      >
+                        {{ suggestion }}
+                      </div>
+                    </div>
+                    <button 
+                      type="button"
+                      @click="addTag(brand.formulas.length - index - 1)"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:cursor-pointer hover:bg-blue-200 transition-colors text-sm"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Selected Tags -->
+                <div class="flex flex-wrap gap-2">
+                  <div 
+                    v-for="(tag, tagIndex) in brand.formulas[brand.formulas.length - index - 1].tags" 
+                    :key="tagIndex"
+                    class="group flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm"
+                  >
+                    <span>{{ tag }}</span>
+                    <button 
+                      type="button"
+                      @click="removeTag(brand.formulas.length - index - 1, tagIndex)"
+                      class="text-blue-400 hover:text-blue-700 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Reviews -->
@@ -130,7 +209,7 @@
                     <input 
                       v-model="formulaIngredients[brand.formulas.length - index - 1]"
                       @input="handleIngredientInput(brand.formulas.length - index - 1)"
-                      @keydown.enter.prevent="addIngredient(brand.formulas.length - index - 1)"
+                      @keydown.enter.prevent="handleIngredientEnter(brand.formulas.length - index - 1)"
                       @keydown.tab.prevent="handleTabComplete(brand.formulas.length - index - 1)"
                       @keydown.up.prevent="handleArrowKeys('up', brand.formulas.length - index - 1)"
                       @keydown.down.prevent="handleArrowKeys('down', brand.formulas.length - index - 1)"
@@ -229,44 +308,6 @@ import ConfirmationModal from './ConfirmationModal.vue';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const categories = [
-  "Immune Health",
-  "Energy",
-  "Beauty",
-  "Gut Health",
-  "Brain Health",
-  "Bone Health",
-  "Children's Health",
-  "Healthy Aging",
-  "Heart Health",
-  "Hormone Support",
-  "Liver & Detox",
-  "Men's Health",
-  "Metabolism",
-  "Methylation",
-  "Mood",
-  "Multivitamins",
-  "Probiotics",
-  "Protein Powders",
-  "Hair, Skin & Nails",
-  "Sleep",
-  "Sports Performance",
-  "Stress",
-  "Thyroid Support",
-  "Women's Health",
-  "Inflammation",
-  "Prenatal & Postnatal",
-  "Eye Health",
-  "Joint Support",
-  "Blood Sugar Support",
-  "Pain Relief",
-  "Antioxidant Support",
-  "Cardiovascular Health",
-  "Cognitive Health",
-  "Detoxification",
-  "Hydration"
-];
-
 const reasons = [
   "Best Seller",
   "Trending",
@@ -275,6 +316,7 @@ const reasons = [
 
 const createEmptyFormula = () => ({
   category: '',
+  tags: [],
   reason: '',
   reviews_text: '',
   example_product_description: '',
@@ -294,19 +336,161 @@ export default {
       formulas: [createEmptyFormula()]
     });
     const formulaIngredients = ref(['']);
+    const formulaTags = ref(['']);
     const formulaToRemove = ref(null);
     const suggestions = ref([]);
+    const tagSuggestions = ref([]);
     const selectedSuggestionIndex = ref(0);
+    const selectedTagSuggestionIndex = ref(0);
     const activeFormulaIndex = ref(null);
+    const activeTagFormulaIndex = ref(null);
     const ingredientsContainers = ref({});
+    const tagsContainers = ref({});
+    const categories = ref([]);
+    const availableTags = ref({});
     let debounceTimeout = null;
+    let tagDebounceTimeout = null;
+    const showCategoryWarning = ref({});
 
-    // Handle click outside for suggestions dropdown
+    const checkCategorySelected = (formulaIndex) => {
+      if (!brand.value.formulas[formulaIndex].category) {
+        showCategoryWarning.value[formulaIndex] = true;
+        // Clear the warning after 3 seconds
+        setTimeout(() => {
+          showCategoryWarning.value[formulaIndex] = false;
+        }, 3000);
+      }
+    };
+
+    // Fetch categories and tags from the server
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/categories`);
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        const data = await response.json();
+        categories.value = data.categories;
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to load categories');
+      }
+    };
+
+    const fetchTags = async (category, formulaIndex) => {
+      try {
+        if (category === 'Other') {
+          // For "Other" category, fetch all tags from all categories
+          const response = await fetch(`${backendUrl}/categories`);
+          if (!response.ok) throw new Error('Failed to fetch categories');
+          const data = await response.json();
+          
+          // Flatten all tags from all categories into a single unique array
+          const allTags = [...new Set(Object.values(data.categoriesMap).flat())];
+          availableTags.value[formulaIndex] = allTags;
+        } else {
+          const response = await fetch(`${backendUrl}/categories/${encodeURIComponent(category)}/tags`);
+          if (!response.ok) throw new Error('Failed to fetch tags');
+          const tags = await response.json();
+          availableTags.value[formulaIndex] = tags;
+        }
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+        toast.error('Failed to load tags');
+      }
+    };
+
+    const handleCategoryChange = async (formulaIndex) => {
+      const category = brand.value.formulas[formulaIndex].category;
+      if (category) {
+        await fetchTags(category, formulaIndex);
+        brand.value.formulas[formulaIndex].tags = []; // Reset tags when category changes
+      }
+    };
+
+    // Tag handling functions
+    const handleTagInput = (formulaIndex) => {
+      if (!brand.value.formulas[formulaIndex].category) {
+        showCategoryWarning.value[formulaIndex] = true;
+        return;
+      }
+
+      activeTagFormulaIndex.value = formulaIndex;
+      const query = formulaTags.value[formulaIndex].trim().toLowerCase();
+
+      if (tagDebounceTimeout) {
+        clearTimeout(tagDebounceTimeout);
+      }
+
+      if (query.length > 0 && availableTags.value[formulaIndex]) {
+        tagDebounceTimeout = setTimeout(() => {
+          tagSuggestions.value = availableTags.value[formulaIndex].filter(tag => 
+            tag.toLowerCase().includes(query) &&
+            !brand.value.formulas[formulaIndex].tags.includes(tag)
+          );
+          selectedTagSuggestionIndex.value = 0;
+        }, 200);
+      } else {
+        tagSuggestions.value = [];
+      }
+    };
+
+    const selectTagSuggestion = (tag, formulaIndex) => {
+      formulaTags.value[formulaIndex] = tag;
+      tagSuggestions.value = [];
+      addTag(formulaIndex);
+    };
+
+    const handleTagTabComplete = (formulaIndex) => {
+      if (tagSuggestions.value.length > 0) {
+        selectTagSuggestion(tagSuggestions.value[selectedTagSuggestionIndex.value], formulaIndex);
+      }
+    };
+
+    const handleTagArrowKeys = (direction, formulaIndex) => {
+      if (tagSuggestions.value.length === 0) return;
+
+      if (direction === 'up') {
+        selectedTagSuggestionIndex.value = selectedTagSuggestionIndex.value > 0 
+          ? selectedTagSuggestionIndex.value - 1 
+          : tagSuggestions.value.length - 1;
+      } else {
+        selectedTagSuggestionIndex.value = selectedTagSuggestionIndex.value < tagSuggestions.value.length - 1 
+          ? selectedTagSuggestionIndex.value + 1 
+          : 0;
+      }
+
+      // Update the input field with the currently selected suggestion
+      formulaTags.value[formulaIndex] = tagSuggestions.value[selectedTagSuggestionIndex.value];
+    };
+
+    const addTag = (formulaIndex) => {
+      const tag = formulaTags.value[formulaIndex].trim();
+      if (tag && !brand.value.formulas[formulaIndex].tags.includes(tag)) {
+        brand.value.formulas[formulaIndex].tags.push(tag);
+        formulaTags.value[formulaIndex] = '';
+        tagSuggestions.value = [];
+        toast.success(`Added tag: ${tag}`);
+      }
+    };
+
+    const removeTag = (formulaIndex, tagIndex) => {
+      const tag = brand.value.formulas[formulaIndex].tags[tagIndex];
+      brand.value.formulas[formulaIndex].tags.splice(tagIndex, 1);
+      toast.info(`Removed tag: ${tag}`);
+    };
+
+    // Handle click outside for suggestions dropdowns
     const handleClickOutside = (event) => {
       const activeContainer = ingredientsContainers.value[activeFormulaIndex.value];
+      const activeTagContainer = tagsContainers.value[activeTagFormulaIndex.value];
+
       if (activeContainer && !activeContainer.contains(event.target)) {
         suggestions.value = [];
         activeFormulaIndex.value = null;
+      }
+
+      if (activeTagContainer && !activeTagContainer.contains(event.target)) {
+        tagSuggestions.value = [];
+        activeTagFormulaIndex.value = null;
       }
     };
 
@@ -319,6 +503,7 @@ export default {
 
     onMounted(() => {
       document.addEventListener('click', handleClickOutside);
+      fetchCategories();
     });
 
     onUnmounted(() => {
@@ -336,12 +521,21 @@ export default {
               : [createEmptyFormula()]
           };
           formulaIngredients.value = new Array(brand.value.formulas.length).fill('');
+          formulaTags.value = new Array(brand.value.formulas.length).fill('');
+          // Fetch tags for each formula's category
+          brand.value.formulas.forEach((formula, index) => {
+            if (formula.category) {
+              fetchTags(formula.category, index);
+            }
+          });
         } else {
           brand.value = {
             brand: '',
             formulas: [createEmptyFormula()]
           };
           formulaIngredients.value = [''];
+          formulaTags.value = [''];
+          availableTags.value = {};
         }
       },
       { immediate: true }
@@ -360,6 +554,18 @@ export default {
       }
     };
 
+    const selectFirstSuggestion = (formulaIndex) => {
+      if (suggestions.value.length > 0) {
+        selectSuggestion(suggestions.value[selectedSuggestionIndex.value], formulaIndex);
+      }
+    };
+
+    const selectFirstTagSuggestion = (formulaIndex) => {
+      if (tagSuggestions.value.length > 0) {
+        selectTagSuggestion(tagSuggestions.value[selectedTagSuggestionIndex.value], formulaIndex);
+      }
+    };
+
     const handleIngredientInput = (formulaIndex) => {
       activeFormulaIndex.value = formulaIndex;
       const query = formulaIngredients.value[formulaIndex].trim();
@@ -371,9 +577,23 @@ export default {
       if (query.length > 0) {
         debounceTimeout = setTimeout(() => {
           fetchIngredientSuggestions(query);
+          selectedSuggestionIndex.value = 0;
         }, 200);
       } else {
         suggestions.value = [];
+      }
+    };
+
+    const handleIngredientEnter = (formulaIndex) => {
+      if (suggestions.value.length > 0) {
+        // If there are suggestions, select the currently highlighted one
+        selectSuggestion(suggestions.value[selectedSuggestionIndex.value], formulaIndex);
+      } else {
+        // If no suggestions, add the custom ingredient
+        const ingredient = formulaIngredients.value[formulaIndex].trim();
+        if (ingredient) {
+          addIngredient(formulaIndex);
+        }
       }
     };
 
@@ -402,12 +622,14 @@ export default {
           : 0;
       }
 
+      // Update the input field with the currently selected suggestion
       formulaIngredients.value[formulaIndex] = suggestions.value[selectedSuggestionIndex.value];
     };
 
     const addNewFormula = () => {
       brand.value.formulas.push(createEmptyFormula());
       formulaIngredients.value.push('');
+      formulaTags.value.push('');
       toast.info("New formula added");
     };
 
@@ -419,6 +641,7 @@ export default {
       if (brand.value.formulas.length > 1) {
         brand.value.formulas.splice(formulaToRemove.value, 1);
         formulaIngredients.value.splice(formulaToRemove.value, 1);
+        formulaTags.value.splice(formulaToRemove.value, 1);
         toast.info("Formula removed");
       }
       formulaToRemove.value = null;
@@ -470,22 +693,40 @@ export default {
       categories,
       reasons,
       formulaIngredients,
+      formulaTags,
+      showCategoryWarning,
+      checkCategorySelected,
       formulaToRemove,
       suggestions,
+      tagSuggestions,
       selectedSuggestionIndex,
+      selectedTagSuggestionIndex,
+      selectFirstSuggestion,
+      selectFirstTagSuggestion,
       activeFormulaIndex,
+      activeTagFormulaIndex,
       ingredientsContainers,
+      tagsContainers,
+      availableTags,
       addNewFormula,
       confirmRemoveFormula,
       handleRemoveFormulaConfirm,
       addIngredient,
       removeIngredient,
+      addTag,
+      removeTag,
       submitBrand,
       handleIngredientInput,
+      handleIngredientEnter,
+      handleTagInput,
       selectSuggestion,
+      selectTagSuggestion,
       handleTabComplete,
+      handleTagTabComplete,
       handleArrowKeys,
-      handleBackdropClick
+      handleTagArrowKeys,
+      handleBackdropClick,
+      handleCategoryChange
     };
   },
 };

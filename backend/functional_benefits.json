@@ -1,0 +1,177 @@
+{
+    "Immune Health": [
+        "Immune Boost", "Infection Defense", "Cold & Flu", "Antibody Support", 
+        "Pathogen Defense", "Immune Modulation", "Rapid Response", "Allergy Support", 
+        "Seasonal Support", "Cellular Defense"
+    ],
+    "Energy": [
+        "Stamina", "Alertness", "Fatigue Reduction", "Endurance", 
+        "Vitality", "Mental Energy", "Focus Enhancement", "Quick Energy Source", 
+        "Adrenal Support", "Energy Metabolism"
+    ],
+    "Beauty": [
+        "Radiant Skin", "Anti-Aging", "Youthful Glow", "Complexion Enhancement", 
+        "Skin Elasticity", "Wrinkle Reduction", "Hydration", "Collagen Boost", 
+        "Hair Lustre", "Nail Strength"
+    ],
+    "Gut Health": [
+        "Digestive Support", "Bloating Relief", "Regularity", "Gut Flora Balance", 
+        "Nutrient Absorption", "Gas Reduction", "Digestive Comfort", "Prebiotic Support", 
+        "Immune Boost", "Microbiome Diversity"
+    ],
+    "Brain Health": [
+        "Memory Support", "Focus", "Mental Clarity", "Cognitive Speed", 
+        "Neuroprotection", "Mood Enhancement", "Stress Reduction", "Creativity Boost", 
+        "Brain Fog Reduction", "Concentration"]
+    ,
+    "Bone Health": [
+        "Strength", "Density", "Osteoporosis Prevention", "Calcium Absorption", 
+        "Joint Comfort", "Fracture Resistance", "Bone Growth", "Vitamin D Support", 
+        "Resilience", "Mineralization"
+    ],
+    "Children's Health": [
+        "Growth Support", "Development", "Immune Defense", "Cognitive Support", 
+        "Vitamin Intake", "Bone Development", "Energy Boost", "Concentration Improvement", 
+        "Digestive Health"
+    ],
+    "Healthy Aging": [
+        "Longevity", "Antioxidant Protection", "Cellular Repair", "Youthful Vitality", 
+        "Skin Health", "Mental Sharpness", "Bone Strength", "Joint Health", 
+        "Metabolic Support", "Heart Health"
+    ],
+    "Heart Health": [
+        "Cholesterol Balance", "Blood Pressure", "Circulation", "Heart Function", 
+        "Cardiac Wellness", "Vascular Support", "Endurance", "Heart Rhythm Stability", 
+        "Artery Health", "Oxidative Stress Reduction"
+    ],
+    "Hormone Support": [
+        "Balance", "Menopause Relief", "Thyroid Function", "Mood Stability", 
+        "Metabolic Support", "Energy Boost", "Cycle Regulation", "Reproductive Health", 
+        "Adrenal Health", "Stress Reduction"
+    ],
+    "Liver & Detox": [
+        "Cleansing", "Liver Function", "Toxin Elimination", "Antioxidant Support", 
+        "Digestive Aid", "Metabolism Boost", "Fat Metabolism", "Energy Production", 
+        "Kidney Support", "Cellular Renewal"
+    ],
+    "Men's Health": [
+        "Prostate Support", "Vitality", "Reproductive Health", "Muscle Mass", 
+        "Endurance", "Hormonal Balance", "Energy Boost", "Heart Health", 
+        "Cognitive Function", "Stress Resistance"
+    ],
+    "Metabolism": [
+        "Weight Management", "Energy Conversion", "Appetite Control", "Fat Burn", 
+        "Metabolic Rate", "Sugar Metabolism", "Thermogenesis", "Insulin Sensitivity", 
+        "Nutrient Absorption", "Healthy Digestion"
+    ],
+    "Methylation": [
+        "DNA Health", "Homocysteine Balance", "Cellular Energy", "Gene Expression", 
+        "Nutrient Metabolism", "Brain Health", "Cardiac Support", "Longevity", 
+        "Detoxification", "Immune Support"
+    ],
+    "Mood": [
+        "Relaxation", "Stress Relief", "Emotional Balance", "Anxiety Reduction", 
+        "Positive Outlook", "Mental Clarity", "Focus Enhancement", "Sleep Quality", 
+        "Calmness", "Motivation"
+    ],
+    "Multivitamins": [
+        "Nutritional Gap Coverage", "Daily Nutrients", "Immune Support", 
+        "Energy Boost", "Bone Health", "Heart Health", "Cognitive Support", 
+        "Antioxidant Support", "Metabolism Support"
+    ],
+    "Probiotics": [
+        "Gut Flora Balance", "Digestive Comfort", "Immunity Boost", "Regularity", 
+        "Nutrient Utilization", "Bloating Reduction", "Gas Reduction", "Prebiotic Synergy", 
+        "Colon Health", "Microbiome Diversity"
+    ],
+    "Protein Powders": [
+        "Muscle Growth", "Recovery", "Weight Management", "Satiety", 
+        "Nutritional Support", "Energy Source", "Lean Muscle Mass", "Athletic Performance", 
+        "Muscle Repair", "Bone Health"
+    ],
+    "Hair, Skin & Nails": [
+        "Strength", "Growth", "Shine", "Hydration", 
+        "Texture Improvement", "Breakage Prevention", "Elasticity", "Volume", 
+        "Nail Growth", "Scalp Health"
+    ],
+    "Sleep": [
+        "Restfulness", "Sleep Quality", "Circadian Rhythm", "Deep Sleep", 
+        "Relaxation", "Wake Refreshed", "Dream Enhancement", "Calm Mind", 
+        "Sleep Duration", "Stress Reduction"
+    ],
+    "Sports Performance": [
+        "Endurance", "Recovery", "Strength Building", "Energy Boost", 
+        "Focus", "Muscle Mass", "Hydration", "Mental Sharpness", 
+        "Agility", "Speed"
+    ],
+    "Stress": [
+        "Calmness", "Anxiety Reduction", "Mental Clarity", "Emotional Resilience", 
+        "Relaxation", "Focus", "Mood Balance", "Sleep Improvement", 
+        "Stress Hormone Reduction", "Tension Relief"
+    ],
+    "Thyroid Support": [
+        "Metabolic Function", "Hormonal Balance", "Energy", "Weight Management", 
+        "Temperature Regulation", "Cognitive Clarity", "Mood Stability", "Hair Health", 
+        "Immune Support", "Thyroid Health"
+    ],
+    "Women's Health": [
+        "Hormone Balance", "Menstrual Support", "Bone Health", "Reproductive Health", 
+        "Skin Elasticity", "Mood Balance", "Energy", "Breast Health", 
+        "Menopause Relief", "Urinary Health"
+    ],
+    "Inflammation": [
+        "Pain Relief", "Joint Comfort", "Antioxidant Support", "Flexibility", 
+        "Cellular Health", "Swelling Reduction", "Recovery", "Joint Mobility", 
+        "Muscle Relaxation", "Cardiac Support"
+    ],
+    "Prenatal & Postnatal": [
+        "Fetal Development", "Nutrient Supply", "Milk Production", "Energy Support", 
+        "Immune Defense", "Bone Health", "Mood Stability", "Digestive Comfort", 
+        "Brain Development", "Skin Elasticity"
+    ],
+    "Eye Health": [
+        "Vision Clarity", "Macular Support", "Tired Eyes Relief", "Night Vision", 
+        "Dryness Reduction", "Antioxidant Protection", "Glare Reduction", "Focus", 
+        "Eye Strain Relief", "Visual Acuity"
+    ],
+    "Joint Support": [
+        "Pain Relief", "Flexibility", "Cartilage Health", "Mobility", 
+        "Inflammation Reduction", "Joint Comfort", "Durability", "Swelling Reduction", 
+        "Ligament Health", "Bone Strength"
+    ],
+    "Blood Sugar Support": [
+        "Glucose Balance", "Insulin Sensitivity", "Metabolic Health", "Craving Control", 
+        "Energy Levels", "Digestive Health", "Weight Management", "Antioxidant Support", 
+        "Heart Health", "Hormonal Balance"
+    ],
+    "Pain Relief": [
+        "Inflammation Reduction", "Joint Comfort", "Muscle Relaxation", "Tension Relief", 
+        "Mobility", "Nerve Soothing", "Quick Action", "Long Lasting", 
+        "Headache Relief", "Stress Reduction"
+    ],
+    "Antioxidant Support": [
+        "Free Radical Defense", "Cellular Protection", "Aging Support", "Immune Boost", 
+        "Detoxification", "Inflammation Reduction", "Skin Health", "Heart Health", 
+        "Brain Health", "Longevity"
+    ],
+    "Cardiovascular Health": [
+        "Heart Strength", "Cholesterol Balance", "Circulation", "Blood Pressure Support", 
+        "Endurance", "Blood Vessel Health", "Anti-inflammatory", "Oxidative Stress Reduction", 
+        "Platelet Health", "Heart Rhythm Stability"
+    ],
+    "Cognitive Health": [
+        "Memory Improvement", "Focus", "Neuroprotection", "Mental Agility", 
+        "Cognitive Clarity", "Mood Enhancement", "Stress Resistance", "Decision Making", 
+        "Brain Function", "Attention Span"
+    ],
+    "Detoxification": [
+        "Toxin Elimination", "Liver Support", "Digestive Cleansing", "Purification", 
+        "Antioxidant Support", "Weight Loss", "Bloating Reduction", "Skin Clarity", 
+        "Cell Renewal", "Immune Health"
+    ],
+    "Hydration": [
+        "Electrolyte Balance", "Skin Moisture", "Performance Support", "Rehydration", 
+        "Thirst Quenching", "Endurance", "Mental Focus", "Nutrient Absorption", 
+        "Energy Boost", "Cellular Hydration"
+    ]
+}

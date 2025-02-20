@@ -14,6 +14,17 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const categoriesMapPath = path.join(__dirname, 'functional_benefits.json');
+let categoriesMap = {};
+
+try {
+    const data = fs.readFileSync(categoriesMapPath, 'utf8');
+    categoriesMap = JSON.parse(data);
+    console.log('Loaded categories map:', Object.keys(categoriesMap).length, 'categories');
+  } catch (err) {
+    console.error('Error reading categories map:', err);
+  }
+
 const jsonFilePath = path.join(__dirname, 'normalization_map.json');
 let baseIngredients = [];
 
@@ -67,6 +78,27 @@ app.get('/brands/:id', async (request, reply) => {
         return brand;
     } catch (err) {
         reply.status(500).send(err);
+    }
+});
+
+app.get('/categories', async (request, reply) => {
+    try {
+        return {
+            categories: Object.keys(categoriesMap),
+            categoriesMap
+        };
+    } catch (err) {
+        reply.status(500).send({ error: 'Failed to fetch categories' });
+    }
+});
+
+app.get('/categories/:category/tags', async (request, reply) => {
+    try {
+        const { category } = request.params;
+        const tags = categoriesMap[category] || [];
+        return tags;
+    } catch (err) {
+        reply.status(500).send({ error: 'Failed to fetch tags' });
     }
 });
 

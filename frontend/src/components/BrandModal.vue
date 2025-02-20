@@ -1,6 +1,13 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+  <div 
+    v-if="isVisible" 
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
+    @click="handleBackdropClick"
+  >
+    <div 
+      class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+      @click.stop
+    >
       <!-- Header -->
       <div class="p-6 border-b border-gray-200">
         <h2 class="text-2xl font-bold text-gray-900">
@@ -114,22 +121,49 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Functional Ingredients</label>
               <div class="space-y-3">
-                <!-- Ingredients Input -->
+                <!-- Ingredients Input with Inline Autocomplete -->
                 <div class="relative">
-                  <input 
-                    v-model="formulaIngredients[brand.formulas.length - index - 1]"
-                    @keydown.enter.prevent="addIngredient(brand.formulas.length - index - 1)"
-                    type="text"
-                    placeholder="Type an ingredient and press Enter"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  />
-                  <button 
-                    type="button"
-                    @click="addIngredient(brand.formulas.length - index - 1)"
-                    class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:cursor-pointer hover:bg-blue-200 transition-colors text-sm"
+                  <div 
+                    class="relative" 
+                    :ref="el => { if (el) ingredientsContainers[brand.formulas.length - index - 1] = el }"
                   >
-                    Add
-                  </button>
+                    <input 
+                      v-model="formulaIngredients[brand.formulas.length - index - 1]"
+                      @input="handleIngredientInput(brand.formulas.length - index - 1)"
+                      @keydown.enter.prevent="addIngredient(brand.formulas.length - index - 1)"
+                      @keydown.tab.prevent="handleTabComplete(brand.formulas.length - index - 1)"
+                      @keydown.up.prevent="handleArrowKeys('up', brand.formulas.length - index - 1)"
+                      @keydown.down.prevent="handleArrowKeys('down', brand.formulas.length - index - 1)"
+                      type="text"
+                      placeholder="Type an ingredient and press Enter"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      :class="{'pr-20': suggestions.length > 0}"
+                      autocomplete="off"
+                    />
+                    <div 
+                      v-if="suggestions.length > 0 && activeFormulaIndex === (brand.formulas.length - index - 1)"
+                      class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto"
+                      @click.stop
+                    >
+                      <div 
+                        v-for="(suggestion, idx) in suggestions" 
+                        :key="suggestion"
+                        @click="selectSuggestion(suggestion, brand.formulas.length - index - 1)"
+                        @mouseenter="selectedSuggestionIndex = idx"
+                        class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        :class="{'bg-gray-100': selectedSuggestionIndex === idx}"
+                      >
+                        {{ suggestion }}
+                      </div>
+                    </div>
+                    <button 
+                      type="button"
+                      @click="addIngredient(brand.formulas.length - index - 1)"
+                      class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:cursor-pointer hover:bg-blue-200 transition-colors text-sm"
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Ingredients Tags -->
@@ -189,11 +223,12 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import ConfirmationModal from './ConfirmationModal.vue';
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const categories = [
   "Immune Health",
   "Energy",
@@ -260,6 +295,35 @@ export default {
     });
     const formulaIngredients = ref(['']);
     const formulaToRemove = ref(null);
+    const suggestions = ref([]);
+    const selectedSuggestionIndex = ref(0);
+    const activeFormulaIndex = ref(null);
+    const ingredientsContainers = ref({});
+    let debounceTimeout = null;
+
+    // Handle click outside for suggestions dropdown
+    const handleClickOutside = (event) => {
+      const activeContainer = ingredientsContainers.value[activeFormulaIndex.value];
+      if (activeContainer && !activeContainer.contains(event.target)) {
+        suggestions.value = [];
+        activeFormulaIndex.value = null;
+      }
+    };
+
+    // Handle click on modal backdrop
+    const handleBackdropClick = (event) => {
+      if (event.target === event.currentTarget) {
+        props.closeDialog();
+      }
+    };
+
+    onMounted(() => {
+      document.addEventListener('click', handleClickOutside);
+    });
+
+    onUnmounted(() => {
+      document.removeEventListener('click', handleClickOutside);
+    });
 
     watch(
       () => props.editData,
@@ -282,6 +346,64 @@ export default {
       },
       { immediate: true }
     );
+
+    const fetchIngredientSuggestions = async (query) => {
+      try {
+        const response = await fetch(`${backendUrl}/ingredients/search?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error('Failed to fetch suggestions');
+        const data = await response.json();
+        suggestions.value = data;
+        selectedSuggestionIndex.value = 0;
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+        suggestions.value = [];
+      }
+    };
+
+    const handleIngredientInput = (formulaIndex) => {
+      activeFormulaIndex.value = formulaIndex;
+      const query = formulaIngredients.value[formulaIndex].trim();
+
+      if (debounceTimeout) {
+        clearTimeout(debounceTimeout);
+      }
+
+      if (query.length > 0) {
+        debounceTimeout = setTimeout(() => {
+          fetchIngredientSuggestions(query);
+        }, 200);
+      } else {
+        suggestions.value = [];
+      }
+    };
+
+    const selectSuggestion = (suggestion, formulaIndex) => {
+      formulaIngredients.value[formulaIndex] = suggestion;
+      suggestions.value = [];
+      addIngredient(formulaIndex);
+    };
+
+    const handleTabComplete = (formulaIndex) => {
+      if (suggestions.value.length > 0) {
+        selectSuggestion(suggestions.value[selectedSuggestionIndex.value], formulaIndex);
+      }
+    };
+
+    const handleArrowKeys = (direction, formulaIndex) => {
+      if (suggestions.value.length === 0) return;
+
+      if (direction === 'up') {
+        selectedSuggestionIndex.value = selectedSuggestionIndex.value > 0 
+          ? selectedSuggestionIndex.value - 1 
+          : suggestions.value.length - 1;
+      } else {
+        selectedSuggestionIndex.value = selectedSuggestionIndex.value < suggestions.value.length - 1 
+          ? selectedSuggestionIndex.value + 1 
+          : 0;
+      }
+
+      formulaIngredients.value[formulaIndex] = suggestions.value[selectedSuggestionIndex.value];
+    };
 
     const addNewFormula = () => {
       brand.value.formulas.push(createEmptyFormula());
@@ -307,6 +429,7 @@ export default {
       if (ingredient && !brand.value.formulas[formulaIndex].functional_ingredients.includes(ingredient)) {
         brand.value.formulas[formulaIndex].functional_ingredients.push(ingredient);
         formulaIngredients.value[formulaIndex] = '';
+        suggestions.value = [];
         toast.success(`Added ingredient: ${ingredient}`);
       }
     };
@@ -348,12 +471,21 @@ export default {
       reasons,
       formulaIngredients,
       formulaToRemove,
+      suggestions,
+      selectedSuggestionIndex,
+      activeFormulaIndex,
+      ingredientsContainers,
       addNewFormula,
       confirmRemoveFormula,
       handleRemoveFormulaConfirm,
       addIngredient,
       removeIngredient,
       submitBrand,
+      handleIngredientInput,
+      selectSuggestion,
+      handleTabComplete,
+      handleArrowKeys,
+      handleBackdropClick
     };
   },
 };

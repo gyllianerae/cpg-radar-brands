@@ -68,6 +68,18 @@
                     </div>
                   </div>
 
+                  <div v-if="formula.tags && formula.tags.length > 0" class="mb-4">
+                    <div class="flex justify-end flex-wrap gap-2">
+                      <span 
+                        v-for="tag in formula.tags" 
+                        :key="tag"
+                        class="px-2 py-1 bg-amber-50 text-amber-700 text-xs font-medium rounded-full"
+                      >
+                        {{ tag }}
+                      </span>
+                    </div>
+                  </div>
+
                   <div class="space-y-4">
                     <div>
                       <h5 class="text-sm font-medium text-gray-500 mb-1">Product Description</h5>
